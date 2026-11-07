@@ -1,6 +1,3 @@
-print("test")
-print("Hello")
-
 from tkinter import *
 import random
 
@@ -109,23 +106,29 @@ def change_direction(new_direction):
 
 def check_collisions(snake):
 
+    # get the coordinates of the snake's head
     x, y = snake.coordinates[0]
 
-    if x < 0 or x >= GAME_WIDTH:
+    # check if the snake has hit the wall
+    if x < 0 or x >= GAME_WIDTH:         
         # game over
         return True
-    elif y < 0 or y >= GAME_HEIGHT:
+    elif y < 0 or y >= GAME_HEIGHT:  
         # game over
         return True
 
+    # check if the snake has hit its body
     for body_part in snake.coordinates[1:]:
         if x == body_part[0] and y == body_part[1]:
             # game over
             return True
 
+    # no collision detected
     return False
 
 def game_over():
+
+    # display game over message
     canvas.delete(ALL)
     canvas.create_text(
         canvas.winfo_width() / 2,
@@ -135,6 +138,42 @@ def game_over():
         fill="red",
         tag="gameover"
     )
+
+    # display a try again button
+    restart_button = Button(
+        window,
+        text="Try again",
+        font=('consolas', 20),
+        command=restart_game
+    )
+
+    # place the button on the canvas
+    canvas.create_window(
+        canvas.winfo_width() / 2,
+        canvas.winfo_height() / 2 + 100,
+        window=restart_button
+    )
+
+def restart_game():
+
+    # declare global variables
+    global snake, food, score, direction
+
+    # restart game variables
+    canvas.delete(ALL)
+    score = 0
+    direction = 'down'
+    label.config(text="Score:{}".format(score))
+
+    # clear the canvas
+    canvas.delete(ALL)
+
+    # recreate the snae and food
+    snake = Snake()
+    food = Food()
+
+    # restart the game loop
+    next_turn(snake, food)
 
 # Create game window
 window = Tk()
