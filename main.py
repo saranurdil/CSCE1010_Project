@@ -12,42 +12,47 @@ SNAKE_COLOR = "#00FF00"
 FOOD_COLOR = "#FF0000"
 BACKGROUND_COLOR = "#000000"
 
-
+# Snake class
 class Snake:
-    pass
 
+    # initialize the snake
     def __init__(self):
         self.body_size = BODY_PARTS
         self.coordinates = []
         self.squares = []
 
+        # initialize the snake coordinates
         for i in range(0, BODY_PARTS):
             self.coordinates.append([0, 0])
 
+        # create the snake squares
         for x, y in self.coordinates:
             square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR, tag="snake")
             self.squares.append(square)
 
+# Food class
 class Food:
-    pass
 
-
+    # initialize the food
     def __init__(self):
 
+        # generate random coordinates for the food
         x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
         y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
 
-
+        # set the food coordinates
         self.coordinates = [x, y]
 
+        # create the food circle
         canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tag="food")
 
-
+# Next turn function
 def next_turn(snake, food):
-    pass
 
+    # get the coordinates of the snake's head
     x, y = snake.coordinates[0]
 
+    # update the coordinates based on the direction
     if direction == "up":
         y -= SPACE_SIZE
     elif direction == "down":
@@ -57,12 +62,16 @@ def next_turn(snake, food):
     elif direction == "right":
         x += SPACE_SIZE
 
+    # insert the new coordinates at the beginning of the snake's body
     snake.coordinates.insert(0, (x, y))
 
+    # create a new square for the snake's head
     square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR)
 
+    # insert the new square at the beginning of the snake's body
     snake.squares.insert(0, square)
 
+    # check if the snake has eaten the food
     if x == food.coordinates[0] and y == food.coordinates[1]:
 
         global score
@@ -75,11 +84,14 @@ def next_turn(snake, food):
 
         food = Food()
 
+    
+    # otherwise, remove the last body part
     else:
         del snake.coordinates[-1]
         canvas.delete(snake.squares[-1])
         del snake.squares[-1]
 
+    # check for collisions
     if check_collisions(snake):
         game_over()
     else:   
@@ -87,10 +99,11 @@ def next_turn(snake, food):
 
 
 def change_direction(new_direction):
-    pass
+    # change the direction of the snake
 
     global direction
 
+    # check if the new direction is valid
     if new_direction == 'left':
         if direction != 'right':
             direction = new_direction
@@ -103,6 +116,7 @@ def change_direction(new_direction):
     elif new_direction == 'down':
         if direction != 'up':
             direction = new_direction
+
 
 def check_collisions(snake):
 
@@ -200,18 +214,23 @@ canvas = Canvas(
 )
 canvas.pack()
 
+# Update the window to get its actual size
 window.update()
 
+# Center the window on the screen
 window_width = window.winfo_width()
 window_height = window.winfo_height()
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 
+# calculate the position to center the window
 x = (screen_width/2) - (window_width/2)
 y = (screen_height/2) - (window_height/2)
 
+# set the window geometry to center it on the screen
 window.geometry(f"{window_width}x{window_height}+{int(x)}+{int(y)}")
 
+# Bind keyboard controls
 window.bind('<Left>', lambda event: change_direction('left'))
 window.bind('<Right>', lambda event: change_direction('right'))
 window.bind('<Up>', lambda event: change_direction('up'))
