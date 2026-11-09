@@ -55,9 +55,14 @@ class Food:
     # initialize the food
     def __init__(self):
 
-        # generate random coordinates for the food
-        x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
-        y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
+        
+        # generate random coordinates for the food and force it not to spawn on the snake
+        occupied = [tuple(c) for c in snake.coordinates]
+        while True:    
+            x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
+            y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
+            if (x, y) not in occupied:
+                break
 
         # set the food coordinates
         self.coordinates = [x, y]
@@ -196,8 +201,8 @@ def game_over():
         window=restart_button
     )
     canvas.create_window(
-        canvas.winfo_width() / 2 + 100,
-        canvas.winfo_height() / 2 + 150,
+        canvas.winfo_width() / 2,
+        canvas.winfo_height() / 2 + 200,
         window=menu_button
     )
 
@@ -347,12 +352,14 @@ class ChoiceRow:
  
 def menu_heading(parent, text):
     Label(parent, text=text, font=('consolas', 16), fg="white", bg=MENU_BG).pack(pady=(0, 6))
- # Create game window
+    
+# Create game window
 window = Tk()
 window.title("Snake game")
 window.resizable(False, False)
 window.config(bg=MENU_BG)
- 
+
+# Initialize game state
 score = 0
 direction = 'down'
 snake = None
@@ -361,15 +368,19 @@ game_over_widgets = []
  
 # menu screen
 menu_frame = Frame(window, bg=MENU_BG, padx=60, pady=30)
- 
+
+# Menu title
 Label(menu_frame, text="SNAKE", font=('consolas', 50, 'bold'), fg="#00FF00", bg=MENU_BG).pack(pady=(0, 20))
- 
+
+# Snake color selection
 menu_heading(menu_frame, "Snake color")
 ChoiceRow(menu_frame, "snake_color", [("", c) for c in SNAKE_COLORS], color_mode=True)
  
+# Food color selection
 menu_heading(menu_frame, "Food color")
 ChoiceRow(menu_frame, "food_color", [("", c) for c in FOOD_COLORS], color_mode=True)
  
+# Speed selection
 menu_heading(menu_frame, "Speed  (1 = slow, 10 = fast)")
 speed_slider = Scale(
     menu_frame,
@@ -387,9 +398,11 @@ speed_slider = Scale(
 speed_slider.set(settings["speed"])
 speed_slider.pack(pady=(0, 18))
  
+# Board squares selection
 menu_heading(menu_frame, "Board squares")
 ChoiceRow(menu_frame, "space_size", CELL_SIZES)
  
+# Start button
 start_button = Button(
     menu_frame,
     text="START",
